@@ -79,10 +79,65 @@ const stackHelpers = {
 
     },
 
-    matchingBrackets(inputExpression) {
+    matchingParentheses(inputExpression) {
 
-        // TBD
+        const expressionStack = new Stack();
 
+        for (let i=0 ; i<inputExpression.length ; i++) {
+            const currChar = inputExpression[i];
+            //console.log(currChar);
+
+            // if encounter open parentheses...
+            if (currChar === '(') {
+                // ... should push a tick onto expressionStack
+                expressionStack.push('tick');
+            } else if (currChar === ')') {
+                // a close parentheses should always end the most-recently-opened parentheses;
+                // corollary: there should be something on stack (= un-closed parenthesis) to pop off
+                if (expressionStack.top) {
+                    expressionStack.pop();
+                } else {
+                    return `You are missing a '('.`
+                }
+                
+            }
+        }
+
+        if (expressionStack.top === null) {
+            return 'Expression has valid parentheses.'
+        } else if (expressionStack.top) {
+            return `You are missing a ')'.`
+        }
+    },
+
+    sort(inpStack) {
+
+        const outStack = new Stack();
+
+        // want to continue the following until inpStack is empty
+        while (inpStack.top) {
+
+            activeVal = inpStack.pop();
+
+            // if activeVal is less than top of outStack (or its empty,)
+            if (!outStack.top || activeVal < outStack.top.data) {
+                // add activeVal to outStack
+                outStack.push(activeVal);
+            } else if (activeVal > outStack.top.data) {
+                // but if activeVal is too big, need to move top-most value
+                //    on outstack to inp stack,
+                inpStack.push(outStack.pop());
+                //    and also push activeVal back on to inpStack,
+                //    so that on next run of while loop, 
+                //    this value will be the "active" value again.
+                inpStack.push(activeVal);
+                // this should end this loop of the while loop,
+                // inpStack still has contents,
+                // and the comparison will repeat with new state of inp vs. outStacks
+            }
+        }
+
+        return outStack;
 
     }
 
